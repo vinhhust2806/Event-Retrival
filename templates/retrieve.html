@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
+          integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+</head>
+<body>
+<div class="container">
+    <div class="row text-center">
+        <form method="POST">
+            <h2 class="text-muted">Retrival Text: </h2>
+            <input name="text" class="form-control">
+            <input type="submit" class="btn btn-primary">
+        </form>
+    </div>
+    <div class="row text-center">
+        <form method="POST">
+            <h2 class="text-muted">Job: </h2>
+            <input name="text1" class="form-control">
+            <input type="submit" class="btn btn-primary">
+        </form>
+    </div>
+    <div class="row text-center">
+        <form method="POST">
+            <h2 class="text-muted">Sex: </h2>
+            <input name="text2" class="form-control">
+            <input type="submit" class="btn btn-primary">
+        </form>
+    </div>
+    <div class="row text-center">
+        <h2 class="text-muted">Retrieval Frames</h2>
+        {% for image_name in image_names %}
+        <div class="col-lg-3 col-md-4 col-xs-6 thumb">
+            <img class="img-responsive" src="{{ image_name.path}}" >
+            <h5>Rank: {{ image_name.rank }}</h5>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
+        integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
+        crossorigin="anonymous"></script>
+
+</body>
+</html>
