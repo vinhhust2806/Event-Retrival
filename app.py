@@ -8,6 +8,9 @@ from run import retrival
 from database import filter
 from extract_object import label_function, filter_function
 import pandas as pd
+from correct import keys,values
+
+change = dict(zip(keys,values))
 
 half = len(database)
 output_update = []
@@ -33,7 +36,7 @@ def job():
     dict = []
     submit = []
     for i in output:
-      submit.append({'video':i.split('/')[1]+'.mp4','key_frame':i.split('/')[2].split('.')[0]})
+      submit.append({'video':i.split('/')[1]+'.mp4','key_frame':change[i.split('/')[1]+'/'+i.split('/')[2]]})
     data = [[i['video'],i['key_frame']] for i in submit]
     file = pd.DataFrame(data=data)
     file.to_csv('result.csv',header=None,index=None)
@@ -52,7 +55,7 @@ def job():
     dict = []
     submit = []
     for i in output:
-      submit.append({'video':i.split('/')[1]+'.mp4','key_frame':i.split('/')[2].split('.')[0]})
+      submit.append({'video':i.split('/')[1]+'.mp4','key_frame':change[i.split('/')[1]+'/'+i.split('/')[2]]})
     data = [[i['video'],i['key_frame']] for i in submit]
     file = pd.DataFrame(data=data)
     file.to_csv('result.csv',header=None,index=None)
