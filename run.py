@@ -10,82 +10,72 @@ import matplotlib.pyplot as plt
 import time
 import pandas as pd
 
-def make_database(features_path,image_path):
-  features_dir = os.listdir(features_path)
-  features_dir.sort()
-  index_database = []
-  features_database = []
-  for dir in features_dir:
-    dir = features_path + '/'+ dir  
-    feature = np.load(dir)
-    shape = feature.shape[0]
-    index_database.append(shape)
-    for i in range(shape):
-      features_database.append(feature[i])
-  image_database = os.listdir(image_path)
-  image_database.sort()
-  
-  index_database = [np.sum(index_database[0:i]) for i in range(1,len(index_database)+1)]
-  features_database = np.array(features_database)
 
-  return index_database,features_database,image_database
-
-class retrival():
-  def __init__(self,model,database,number_neighbors,device,image_path):
-    self.database = database
-    self.number_neighbors = number_neighbors
-    self.device = device
+class retrival_small():
+  def __init__(self,input_frame,input_features,device,model):
+    self.input_frame = input_frame
+    self.input_features = input_features
+    self.number_neighbors = len(input_frame)
+    self.index = pynndescent.NNDescent(input_features)
     self.model = model
-    self.index = pynndescent.NNDescent(database[1])
-    self.image_path = image_path
-    self.output_dir = []
-    self.output = []
+    self.device = device
+
   def __call__(self,input_text):
     text = clip.tokenize([input_text]).to(self.device)
     with torch.no_grad():
        text_features = self.model.encode_text(text)
     text_features = text_features[0].cpu().detach().numpy().reshape(1,-1)
     index = self.index
-    start = time.time()
     neighbors = index.query(text_features,self.number_neighbors)
-    end = time.time()
-    print('Retrival time with',len(neighbors[0][0]),'neighbors is',end-start,' sec')
-    output = []
-    output_dir = []
-    for neighbor in neighbors[0][0]:
-      i = 0
-      while self.database[0][i] < neighbor:
-        i = i+1
-      list_keyframes_inside = os.listdir(self.image_path+'/'+self.database[2][i])
-      list_keyframes_inside.sort()
-      output_dir.append(self.image_path +'/'+self.database[2][i]+'/'+list_keyframes_inside[neighbor-self.database[0][i]])
+    output = [self.input_frame[i] for i in neighbors[0][0]]
+    return output
 
-      output.append({'video':self.database[2][i]+'.mp4','key_frame':list_keyframes_inside[neighbor-self.database[0][i]].split('.')[0]})
-    self.output_dir = output_dir
-    self.output = output
-    return output_dir
-  def plot_results(self):
-    plt.figure(figsize=(30,30))
-    
-    #for i in range(1,len(self.output_dir)+1):
-    for i,image_path in enumerate(self.output_dir):
-       plt.subplot(int(np.sqrt(len(self.output_dir)))+1,int(np.sqrt(len(self.output_dir))),i+1)
-       image = Image.open(image_path).convert("RGB")
-       plt.imshow(image)
-       plt.title("Rank: "+str(i+1))
+class retrival_main():
+  def __init__(self,input_frame,input_features,device,model):
+    self.input_frame = input_frame
+    self.input_features = input_features
+    self.number_neighbors = 100
+    self.index = pynndescent.NNDescent(input_features)
+    self.model = model
+    self.device = device
 
-  def write_submit_file(self):
-    data = [[i['video'],i['key_frame']] for i in self.output]
-    file = pd.DataFrame(data=data)
-    file.to_csv('result.csv',header=None,index=None)
+  def __call__(self,input_text):
+    text = clip.tokenize([input_text]).to(self.device)
+    with torch.no_grad():
+       text_features = self.model.encode_text(text)
+    text_features = text_features[0].cpu().detach().numpy().reshape(1,-1)
+    index = self.index
+    neighbors = index.query(text_features,self.number_neighbors)
+    output = [self.input_frame[i] for i in neighbors[0][0]]
+    return output
 
+def make_features_images(features_path,images_path):
+  images_database = []
+  features_dir = os.listdir(features_path)
+  features_dir.sort()
+  features_database = []
+  for dir in features_dir:
+    dir = features_path + '/'+ dir  
+    feature = np.load(dir)
+    shape = feature.shape[0]
+    for i in range(shape):
+      features_database.append(feature[i])
+  images_dir = os.listdir(images_path)
+  images_dir.sort()
+  for i in images_dir:
+      dir = images_path + '/' + i
+      for j in os.listdir(dir):
+         images_database.append(dir+'/'+j)
+  return np.array(features_database),images_database
 
 features_path = 'CLIPFeatures_C00_V00'
 image_path = 'KeyFramesC00_V00'
 
-database = make_database(features_path,image_path)
-   
 device = "cuda" if torch.cuda.is_available() else "cpu"
 model, preprocess = clip.load("ViT-B/16", device=device)
-number_neighbors = 100
-retrival = retrival(model=model,database=database,number_neighbors=number_neighbors,device=device,image_path=image_path) 
+
+
+database = make_features_images(features_path,image_path)
+key_main = database[1]
+value_main = list(database[0])
+retrival_main = retrival_main(database[1],database[0],device,model)
