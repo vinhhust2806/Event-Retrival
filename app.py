@@ -1,8 +1,8 @@
-from flask import Flask, flash, request, redirect, url_for, render_template
+from flask import Flask, flash, request, redirect, url_for, render_template,jsonify
 import urllib.request
 import os
 from werkzeug.utils import secure_filename
-#from run import database
+from run import database
 import numpy as np
 import base64
 from run import retrival_main, retrival_small, device, model, key_main, value_main
@@ -10,6 +10,7 @@ from database import filter
 from extract_object import label_function, filter_function
 import pandas as pd
 from correct import keys,values
+import glob as glob
 
 change = dict(zip(keys,values))
 database_main = dict(zip(key_main,value_main))
@@ -45,7 +46,7 @@ def job():
     for id,i in enumerate(output):
         with open(i, "rb") as img_file:
            a = base64.b64encode(img_file.read()).decode('utf-8')
-        dict.append({'path':"data:image/jpeg;base64,"+a,'rank':id+1})
+        dict.append({'path':"data:image/jpeg;base64,"+a,'rank':id+1,"video":i.split('/')[1],'key_frame':change[i.split('/')[1]+'/'+i.split('/')[2]] })
     return render_template("retrieve.html",normal_text = recommend[-1],image_names=dict)
  
  text = request.form.get('text1',False)
@@ -57,14 +58,14 @@ def job():
     dict = []
     submit = []
     for i in output:
-      submit.append({'video':i.split('/')[1]+'.mp4','key_frame':change[i.split('/')[1]+'/'+i.split('/')[2]]})
+      submit.append({'video':i.split('/')[1]+'.mp4','key_frame':i.split('/')[2].split('.')[0]})
     data = [[i['video'],i['key_frame']] for i in submit]
     file = pd.DataFrame(data=data)
     file.to_csv('result.csv',header=None,index=None)
     for id,i in enumerate(output):
         with open(i, "rb") as img_file:
            a = base64.b64encode(img_file.read()).decode('utf-8')
-        dict.append({'path':"data:image/jpeg;base64,"+a,'rank':id+1})
+        dict.append({'path':"data:image/jpeg;base64,"+a,'rank':id+1,"video":i.split('/')[1],'key_frame':i.split('/')[2].split('.')[0] })
     return render_template("retrieve.html",normal_text=recommend[-1],image_names=dict)
  
  text = request.form.get('text2',False)
@@ -78,15 +79,29 @@ def job():
     dict = []
     submit = []
     for i in output:
-      submit.append({'video':i.split('/')[1]+'.mp4','key_frame':change[i.split('/')[1]+'/'+i.split('/')[2]]})
+      submit.append({'video':i.split('/')[1]+'.mp4','key_frame':i.split('/')[2].split('.')[0]})
     data = [[i['video'],i['key_frame']] for i in submit]
     file = pd.DataFrame(data=data)
     file.to_csv('result.csv',header=None,index=None)
     for id,i in enumerate(output):
         with open(i, "rb") as img_file:
            a = base64.b64encode(img_file.read()).decode('utf-8')
-        dict.append({'path':"data:image/jpeg;base64,"+a,'rank':id+1})
+        dict.append({'path':"data:image/jpeg;base64,"+a,'rank':id+1,"video":i.split('/')[1],'key_frame':change[i.split('/')[1]+'/'+i.split('/')[2]] })
     return render_template("retrieve.html",normal_text=recommend[-1],image_names=dict)
 
+@app.route("/modal",methods=["GET"])
+def show_modal():
+    dict=[]
+    args=request.args
+    frame_id = args.get("frame_id").zfill(6)
+    frames = glob.glob("KeyFramesC00_V00/"+args.get("video")+"/*.jpg")
+    frame_idx_vid = frames.index("KeyFramesC00_V00/"+args.get("video")+"\\"+frame_id+".jpg")
+    prev_idx = max(frame_idx_vid-5,0)
+    after_idx= min(frame_idx_vid+5,len(frames))
+    for idx in range(prev_idx,after_idx):
+        with open(frames[idx], "rb") as img_file:
+           a = base64.b64encode(img_file.read()).decode('utf-8')
+        dict.append({'path':"data:image/jpeg;base64,"+a})
+    return jsonify({"htmlresponse":render_template("modal_nearframe.html",image_names=dict)})
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001, debug=True)
