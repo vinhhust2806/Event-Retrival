@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
-          integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.1/jquery.min.js"></script>
 
 </head>
 <body>
@@ -39,10 +39,20 @@
         <h2 class="text-muted">Retrieval Frames</h2>
         {% for image_name in image_names %}
         <div class="col-lg-3 col-md-4 col-xs-6 thumb">
-            <img class="img-responsive" src="{{ image_name.path}}" >
+            <img class="img-responsive" src="{{ image_name.path}}" onclick="moreDetail('{{image_name.video}}','{{image_name.key_frame}}')">
             <h5>Rank: {{ image_name.rank }}</h5>
         </div>
         {% endfor %}
+    </div>
+    {% block modal %}{% endblock %}
+</div>
+<div class="modal" id="exampleModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-body">
+
+            </div>
+        </div>
     </div>
 </div>
 
@@ -50,5 +60,25 @@
         integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
         crossorigin="anonymous"></script>
 
+
 </body>
+{% block script %}
+    <script>
+        function moreDetail(video, frame_id){
+            $.ajax({
+                url: 'modal',
+                type: 'GET',
+                data: {
+                    video: video,
+                    frame_id: frame_id
+                },
+                success:function(data){
+                    console.log(data)
+                    $(".modal-body").html(data.htmlresponse)
+                    $("#exampleModal").modal("show")
+                }
+            })
+        }
+    </script>
+{% endblock %}
 </html>

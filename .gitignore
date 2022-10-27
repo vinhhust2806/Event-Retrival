@@ -8,3 +8,8 @@ __pycache__/
 thumbs.db
 .DS_Store
 .idea
+CLIPFeatures_C00_V00/*
+Keyframe_P_C0_V00/*
+KeyFramesC00_V00/*
+ObjectsC00_V00/*
+result.csv
