@@ -1,5 +1,6 @@
 {% for image_name in image_names %}
 <div class="col-lg-6 thumb">
     <img class="img-responsive" src="{{ image_name.path}}">
+    <h5>Id: {{ image_name.id }}</h5>
 </div>
 {% endfor %}

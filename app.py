@@ -88,7 +88,8 @@ def job():
            a = base64.b64encode(img_file.read()).decode('utf-8')
         dict.append({'path':"data:image/jpeg;base64,"+a,'rank':id+1,"video":i.split('/')[1],'key_frame':i.split('/')[2].split('.')[0] })
     return render_template("retrieve.html",normal_text=recommend[-1],image_names=dict)
-
+ 
+ 
 @app.route("/modal",methods=["GET"])
 def show_modal():
     dict=[]
@@ -96,12 +97,13 @@ def show_modal():
     frame_id = args.get("frame_id").zfill(6)
     frames = glob.glob("KeyFramesC00_V00/"+args.get("video")+"/*.jpg")
     frame_idx_vid = frames.index("KeyFramesC00_V00/"+args.get("video")+"\\"+frame_id+".jpg")
-    prev_idx = max(frame_idx_vid-5,0)
-    after_idx= min(frame_idx_vid+5,len(frames))
+    prev_idx = max(frame_idx_vid-10,0)
+    after_idx= min(frame_idx_vid+10,len(frames))
     for idx in range(prev_idx,after_idx):
         with open(frames[idx], "rb") as img_file:
            a = base64.b64encode(img_file.read()).decode('utf-8')
-        dict.append({'path':"data:image/jpeg;base64,"+a})
+        dict.append({'path':"data:image/jpeg;base64,"+a,'id':change[frames[idx].split('\\')[0].split('/')[1]+'/'+frames[idx].split('\\')[1]]})
     return jsonify({"htmlresponse":render_template("modal_nearframe.html",image_names=dict)})
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001, debug=True)
