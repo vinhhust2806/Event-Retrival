@@ -58,6 +58,7 @@ def job():
     dict = []
     submit = []
     for i in output:
+      print(i)
       submit.append({'video':i.split('/')[1]+'.mp4','key_frame':change[i.split('/')[1]+'/'+i.split('/')[2]]})
     data = [[i['video'],i['key_frame']] for i in submit]
     file = pd.DataFrame(data=data)

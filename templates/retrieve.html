@@ -16,31 +16,30 @@
     </div>
     <div class="row text-center">
         <form method="POST">
-            <h2 class="text-muted">Retrival Text: </h2>
+            <h2 class="text-muted">Search CLIP từ đầu: </h2>
             <input name="text1" class="form-control">
             <input type="submit" class="btn btn-primary">
         </form>
     </div>
     <div class="row text-center">
         <form method="POST">
-            <h2 class="text-muted">Object: </h2>
+            <h2 class="text-muted">Search theo keywords bên trên: </h2>
             <input name="text" class="form-control">
             <input type="submit" class="btn btn-primary">
         </form>
     </div>
     <div class="row text-center">
         <form method="POST">
-            <h2 class="text-muted">Clip Continue: </h2>
+            <h2 class="text-muted">Search tiếp bằng CLIP: </h2>
             <input name="text2" class="form-control">
             <input type="submit" class="btn btn-primary">
         </form>
-    </div>
     <div class="row text-center">
         <h2 class="text-muted">Retrieval Frames</h2>
         {% for image_name in image_names %}
         <div class="col-lg-3 col-md-4 col-xs-6 thumb">
             <img class="img-responsive" src="{{ image_name.path}}" onclick="moreDetail('{{image_name.video}}','{{image_name.key_frame}}')">
-            <h5>Rank: {{ image_name.rank }}</h5>
+            <h5>Video: {{ image_name.video }}, Rank: {{ image_name.rank }}</h5>
         </div>
         {% endfor %}
     </div>
