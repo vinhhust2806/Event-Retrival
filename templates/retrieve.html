@@ -16,7 +16,14 @@
     </div>
     <div class="row text-center">
         <form method="POST">
-            <h2 class="text-muted">Search CLIP từ đầu: </h2>
+            <h2 class="text-muted">Reset đánh "u" rồi submit: </h2>
+            <input name="textsubmit" class="form-control">
+            <input type="submit" class="btn btn-primary">
+        </form>
+    </div>
+    <div class="row text-center">
+        <form method="POST">
+            <h2 class="text-muted">Search bằng CLIP: </h2>
             <input name="text1" class="form-control">
             <input type="submit" class="btn btn-primary">
         </form>
@@ -30,8 +37,20 @@
     </div>
     <div class="row text-center">
         <form method="POST">
-            <h2 class="text-muted">Search tiếp bằng CLIP: </h2>
+            <h2 class="text-muted">Search liên tục bằng CLIP: </h2>
             <input name="text2" class="form-control">
+            <input type="submit" class="btn btn-primary">
+        </form>
+    <div class="row text-center">
+        <form method="POST">
+            <h2 class="text-muted">Search bằng tên video: </h2>
+            <input name="text3" class="form-control">
+            <input type="submit" class="btn btn-primary">
+        </form>
+    <div class="row text-center">
+        <form method="POST">
+            <h2 class="text-muted">Search bằng audio: </h2>
+            <input name="text4" class="form-control">
             <input type="submit" class="btn btn-primary">
         </form>
     <div class="row text-center">
@@ -40,6 +59,7 @@
         <div class="col-lg-3 col-md-4 col-xs-6 thumb">
             <img class="img-responsive" src="{{ image_name.path}}" onclick="moreDetail('{{image_name.video}}','{{image_name.key_frame}}')">
             <h5>Video: {{ image_name.video }}, Rank: {{ image_name.rank }}</h5>
+            <button class="btn btn-sm btn-danger" onclick="toTop1('{{ image_name.video }}','{{ image_name.key_frame }}',{{ image_name.rank }},this)">To Top 1</button>
         </div>
         {% endfor %}
     </div>
@@ -55,11 +75,9 @@
     </div>
 </div>
 
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
         integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
         crossorigin="anonymous"></script>
-
-
 </body>
 {% block script %}
     <script>
@@ -76,6 +94,23 @@
                     $(".modal-body").html(data.htmlresponse)
                     $("#exampleModal").modal("show")
                 }
+            })
+        }
+
+        function toTop1(video, frame_id, current_rank,dom){
+            $.ajax({
+                url: 'toTop1',
+                type: 'GET',
+                data: {
+                    video: video,
+                    frame_id: frame_id,
+                    current_rank:current_rank
+                },
+                success:function(){
+                    window.alert("Has updated to top 1"+video+"_"+frame_id)
+
+                }
+
             })
         }
     </script>
