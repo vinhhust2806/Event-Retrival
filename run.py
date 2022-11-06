@@ -68,14 +68,14 @@ def make_features_images(features_path,images_path):
          images_database.append(dir+'/'+j)
   return np.array(features_database),images_database
 
-features_path = 'CLIPFeatures_C00_V00'
-image_path = 'KeyFramesC00_V00'
-
-device = "cuda" if torch.cuda.is_available() else "cpu"
-model, preprocess = clip.load("ViT-B/16", device=device)
-
-
-database = make_features_images(features_path,image_path)
-key_main = database[1]
-value_main = list(database[0])
-retrival_main = retrival_main(database[1],database[0],device,model)
+# features_path = 'CLIPFeatures_C00_V00'
+# image_path = 'KeyFramesC00_V00'
+#
+# device = "cuda" if torch.cuda.is_available() else "cpu"
+# model, preprocess = clip.load("ViT-B/16", device=device)
+#
+#
+# database = make_features_images(features_path,image_path)
+# key_main = database[1]
+# value_main = list(database[0])
+# retrival_main = retrival_main(database[1],database[0],device,model)
