@@ -2,10 +2,10 @@ from flask import Flask, flash, request, redirect, url_for, render_template,json
 import urllib.request
 import os
 from werkzeug.utils import secure_filename
-# from run import database
+from run import database
 import numpy as np
 import base64
-#from run import retrival_main, retrival_small, device, model, key_main, value_main
+from run import retrival_main, retrival_small, device, model, key_main, value_main
 from database import filter
 from extract_object import label_function, filter_function
 import pandas as pd
@@ -15,8 +15,8 @@ from bbb import function_search_video, function_search_text, bigdata
 from numpy import genfromtxt
 
 
-# change = dict(zip(keys,values))
-# database_main = dict(zip(key_main,value_main))
+change = dict(zip(keys,values))
+database_main = dict(zip(key_main,value_main))
 
 
 label_update = []
@@ -28,7 +28,7 @@ recommend = []
 
 @app.route('/')
 def fetchAPI():
-    return render_template("retrieve_new.html",normal_text = 'Keywords')
+    return render_template("retrieve.html",normal_text = 'Keywords')
 
 
 @app.route('/', methods=['POST'])
