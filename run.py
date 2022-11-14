@@ -9,13 +9,14 @@ from urllib.request import urlretrieve
 import matplotlib.pyplot as plt
 import time
 import pandas as pd
+import pickle
 
 
 class retrival_small():
   def __init__(self,input_frame,input_features,device,model):
     self.input_frame = input_frame
     self.input_features = input_features
-    self.number_neighbors = len(input_frame)
+    self.number_neighbors = len(input_frame) if len(input_frame)<100 else 100
     self.index = pynndescent.NNDescent(input_features)
     self.model = model
     self.device = device
@@ -35,7 +36,8 @@ class retrival_main():
     self.input_frame = input_frame
     self.input_features = input_features
     self.number_neighbors = 100
-    self.index = pynndescent.NNDescent(input_features)
+    with open("index", "rb") as fp:  # Unpickling
+      self.index = pickle.load(fp)
     self.model = model
     self.device = device
 
@@ -68,14 +70,23 @@ def make_features_images(features_path,images_path):
          images_database.append(dir+'/'+j)
   return np.array(features_database),images_database
 
-# features_path = 'CLIPFeatures_C00_V00'
-# image_path = 'KeyFramesC00_V00'
-#
-# device = "cuda" if torch.cuda.is_available() else "cpu"
-# model, preprocess = clip.load("ViT-B/16", device=device)
-#
-#
+features_path = 'CLIPFeatures_C00_V00'
+image_path = 'KeyFramesC00_V00'
+
+device = "cuda" if torch.cuda.is_available() else "cpu"
+model, preprocess = clip.load("ViT-B/16", device=device)
+
+
 # database = make_features_images(features_path,image_path)
-# key_main = database[1]
-# value_main = list(database[0])
-# retrival_main = retrival_main(database[1],database[0],device,model)
+# with open("database", "wb") as fp:  # Pickling
+#   pickle.dump(database, fp)
+with open("database", "rb") as fp:  # Unpickling
+  database = pickle.load(fp)
+key_main = database[1]
+value_main = list(database[0])
+# print("run1")
+# index = pynndescent.NNDescent(database[0])
+# with open("index", "wb") as fp:  # Pickling
+#   pickle.dump(index, fp)
+
+retrival_main = retrival_main(database[1],database[0],device,model)

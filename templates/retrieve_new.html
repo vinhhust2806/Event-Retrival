@@ -159,6 +159,26 @@
             for(let i=0;i<list_names.length;i++){
                 output.push([list_names[i].value , list_nums[i].value ])
             }
+            $.ajax({
+                url:"searchObject",
+                type:"POST",
+                data : JSON.stringify({query:$("input[name=text1]").val(),objects:output}),
+                contentType:'application/json',
+                dataType:"json",
+                success:function(data){
+                    console.log(data)
+                    $.ajax({
+                        url:"submitSearchObject",
+                        type:"POST",
+                        data : JSON.stringify(data),
+                        contentType:'application/json',
+                        success:function(data){
+                            console.log(data)
+                            $("html").html(data)
+                        }
+                    })
+                }
+            })
             console.log(output)
         }
         function moreDetail(video, frame_id){

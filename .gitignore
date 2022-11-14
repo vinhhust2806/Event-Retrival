@@ -13,3 +13,8 @@ Keyframe_P_C0_V00/*
 KeyFramesC00_V00/*
 ObjectsC00_V00/*
 result.csv
+*.npy
+correct
+database
+index
+retrival_main
